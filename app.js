@@ -10,12 +10,13 @@ async function init() {
         choices: [
             "View all Employees",
             "View all Roles",
-            "View all departments",
-            "Add a department",
-            "Add a Role",
+            "View all Departments",
             "Add an Employee",
-
-
+            "Add a Role",
+            "Add a Department",
+            "Remove an Employee",
+            "Remove a Role",
+            "Remove a Department"
         ]
     })
 }
