@@ -16,7 +16,40 @@ async function init() {
             "Add a Department",
             "Remove an Employee",
             "Remove a Role",
-            "Remove a Department"
+            "Remove a Department",
+            "Exit"
         ]
     })
+
+    switch(choice) {
+        case "View all Employees":
+        return viewAllEmployees();
+
+        case "View all Roles":
+        return viewAllRoles();
+
+        case "View all Departments":
+        return viewAllDepartments();
+
+        case "Add an Employee":
+        return addEmployee();
+
+        case "Add a Role":
+        return addRole();
+
+        case "Add a Department":
+        return addDepartment();
+
+        case "Remove an Employee":
+        return removeEmployee();
+
+        case "Remove a Role":
+        return removeRole();
+
+        case "Remove a Department":
+        return removeDepartment();
+
+        case "Exit":
+        process.exit(0);
+    }
 }
