@@ -203,3 +203,26 @@ async function removeEmployee() {
     console.log("Employee has been deleted.")
 }
 
+// Function that allows user to remove a role
+async function removeRole() {
+    const allRoles = await connection.query('SELECT title, id FROM role');
+
+    const role = await prompt([
+        {
+            name: "role_name",
+            type: "list",
+            message: "Which role would you like to remove?",
+            choices: allRoles.map((role) => ({
+                name: role.title,
+                value: role.id
+            }))
+        }
+    ]);
+
+    const removeRquery = "DELETE FROM roles WHERE id = ?";
+
+    const removeRdata = await connection.query(removeRquery, [role.role_name]);
+
+    console.log("Role has been deleted.")
+}
+
