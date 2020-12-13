@@ -223,6 +223,28 @@ async function removeRole() {
 
     const removeRdata = await connection.query(removeRquery, [role.role_name]);
 
-    console.log("Role has been deleted.")
+    console.log("Role has been deleted.");
 }
 
+// Function that allows user to remove a department
+async function removeDepartment() {
+    const allDepartments = await connection.query('SELECT name, id FROM departments')
+
+    const department = await prompt([
+        {
+            name: "department_name",
+            type: "list",
+            message: "Which department would you like to remove?",
+            choices: allDepartments.map((department) => ({
+                name: department.name,
+                value: depratment.id
+            }))
+        }
+    ]);
+
+    const removeDquery = "DELETE FROM departments WHERE id = ?";
+
+    const removeDdata = await connection.query(removeDquery, [department.department_name]);
+
+    console.log("department has been deleted.");
+}
