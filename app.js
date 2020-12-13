@@ -98,3 +98,30 @@ async function viewAllDepartments() {
     console.table(dData);
     init();
 }
+
+//Function that adds a new employee
+async function addEmployee() {
+    const allRoles = await connection.query('SELECT title, id FROM role');
+    const allDepartments = await connection.query('SELECt name, id FROM departments')
+
+    const employee = await inquirer.prompt([
+        {
+            name: 'first_name',
+            message: "Enter the employee's first name"
+        },
+        {
+            name: 'last_name',
+            message: "Enter the employee's last name"
+        },
+        {
+            name: 'role',
+            message: "Enter the employee's role"
+        }
+    ])
+
+    const addEquery = await connection.query("INSERT INTO employees (first_name, last_name, role_id) VALUES (?, ?, ?) ")
+
+    const addEdata = await connection.query(addEquery, [first_name, last_name, role]);
+
+    console.log("Employee added.")
+}
