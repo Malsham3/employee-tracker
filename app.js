@@ -2,6 +2,7 @@ const connection = require ('./db/connection');
 const inquirer = require('inquirer');
 const mysql = require('mysql')
 
+//initial prompts function
 async function init() {
     const { choice } = await inquirer.prompt({
         name: "choice",
@@ -22,6 +23,7 @@ async function init() {
         ]
     })
 
+    // switch method used to retrieve user's choice.
     switch(choice) {
         case "View all Employees":
         return viewAllEmployees();
@@ -58,7 +60,7 @@ async function init() {
     }
 }
 
-
+//Function that views all employees in a table form
 async function viewAllEmployees() {
 
     const eQuery = `SELECT 
@@ -77,13 +79,22 @@ async function viewAllEmployees() {
     init();
 }
 
+//Function that views all roles in a table form
 async function viewAllRoles() {
-    const rQuery = `SELECT roles.title AS Title, roles.salary AS Salary, roles.name AS Name
+    const rQuery = `SELECT title AS Title, salary AS Salary, name AS Name FROM roles
     INNER JOIN departments
     ON roles.department_id = departments.id`
 
     const rData = await connection.query(rQuery);
     console.table(rData);
+    init();
+}
 
+//Function that views all departments in a table form
+async function viewAllDepartments() {
+    const dQuery = 'SELECT name AS Name FROM departments'
+
+    const dData = await connection.query(dQuery);
+    console.table(dData);
     init();
 }
