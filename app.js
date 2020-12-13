@@ -21,7 +21,7 @@ async function init() {
             "Update Employee Role",
             "Exit"
         ]
-    })
+    });
 
     // switch method used to retrieve user's choice.
     switch(choice) {
@@ -57,7 +57,7 @@ async function init() {
 
         case "Exit":
         process.exit(0);
-    }
+    };
 }
 
 init();
@@ -85,7 +85,7 @@ async function viewAllEmployees() {
 async function viewAllRoles() {
     const rQuery = `SELECT title AS Title, salary AS Salary, name AS Name FROM roles
     INNER JOIN departments
-    ON roles.department_id = departments.id`
+    ON roles.department_id = departments.id`;
 
     const rData = await connection.query(rQuery);
     console.table(rData);
@@ -94,7 +94,7 @@ async function viewAllRoles() {
 
 //Function that views all departments in a table form
 async function viewAllDepartments() {
-    const dQuery = 'SELECT name AS Name FROM departments'
+    const dQuery = 'SELECT name AS Name FROM departments';
 
     const dData = await connection.query(dQuery);
     console.table(dData);
@@ -104,7 +104,7 @@ async function viewAllDepartments() {
 //Function that adds a new employee
 async function addEmployee() {
     const allRoles = await connection.query('SELECT title, id FROM role');
-    const allDepartments = await connection.query('SELECt name, id FROM departments')
+    const allDepartments = await connection.query('SELECt name, id FROM departments');
 
     const employee = await inquirer.prompt([
         {
@@ -119,20 +119,20 @@ async function addEmployee() {
             name: 'role',
             message: "Enter the employee's role"
         }
-    ])
+    ]);
 
-    const addEquery = await connection.query("INSERT INTO employees (first_name, last_name, role_id) VALUES (?, ?, ?) ")
+    const addEquery = "INSERT INTO employees (first_name, last_name, role_id) VALUES (?, ?, ?) ";
 
     const addEdata = await connection.query(addEquery, [employee.first_name, employee.last_name, employee.role]);
 
-    console.log("Employee added.")
+    console.log("Employee has been added.");
 
     init();
 }
 
 //Function that adds a new Role
 async function addRole() {
-    const allDepartments = await connection.query('SELECt name, id FROM departments')
+    const allDepartments = await connection.query('SELECT name, id FROM departments');
 
     const role = await inquirer.prompt([
         {
@@ -151,13 +151,13 @@ async function addRole() {
                 value: department.id,
             }))
         }
-    ])
+    ]);
 
-    const addRquery = await connection.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?) ")
+    const addRquery = "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?) ";
 
     const addRdata = await connection.query(addRquery, [role.role_title, role.role_salary, role.role_department]);
 
-    console.log("Role added.")
+    console.log("Role has been added.");
 
     init();
 }
@@ -169,13 +169,37 @@ async function addDepartment() {
             name: 'department_title',
             message: "What is the title of the role?"
         }
-    ])
+    ]);
 
-    const addDquery = await connection.query("INSERT INTO departments (name) VALUES (?)")
+    const addDquery = "INSERT INTO departments (name) VALUES (?)";
 
     const addDdata = await connection.query(addDquery, [department.department_title]);
 
-    console.log("Department added.")
+    console.log("Department has been added.");
 
     init();
 }
+
+// Function that allows user to remove an employee
+async function removeEmployee() {
+    const allEmplpoyees = await connection.query('SELECT name, id FROM departments')
+
+    const employee = await prompt([
+        {
+            name: "employee_name",
+            type: "list",
+            message: "Which employee would you like to remove?",
+            choices: allEmplpoyees.map((employee) => ({
+                name: employee.name,
+                value: employee.id
+            }))
+        }
+    ]);
+
+    const removeEquery = "DELETE FROM employees WHERE id = ?";
+
+    const removeEdata = await connection.query(removeEquery, [employee.employee_name]);
+
+    console.log("Employee has been deleted.")
+}
+
