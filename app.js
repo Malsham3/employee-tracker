@@ -61,13 +61,29 @@ async function init() {
 
 async function viewAllEmployees() {
 
-    const query = `SELECT 
+    const eQuery = `SELECT 
     employees.first_name AS 'First Name', employees.last_name AS 'Last Name',
-    roles.title AS 'Title', roles.salary AS 'Salary', 
-    departments.name AS 'Department',
+    roles.title AS Title, roles.salary AS Salary, 
+    departments.name AS Department,
     IFNULL(CONCAT(m.first_name, ' ', m.last_name),'N/A') AS 'Manager'
-    FROM employee 
-    LEFT JOIN employee m ON m.id = e.manager_id
-    INNER JOIN role ON e.role_id = role.id
-    INNER JOIN department ON role.department_id = department.id`;
+    FROM employee e
+    LEFT JOIN employees m ON m.id = e.manager_id
+    INNER JOIN roles ON e.role_id = roles.id
+    INNER JOIN departments ON roles.department_id = departments.id`;
+
+    const eData = await connection.query(eQuery);
+    console.table(eData);
+
+    init();
+}
+
+async function viewAllRoles() {
+    const rQuery = `SELECT roles.title AS Title, roles.salary AS Salary, roles.name AS Name
+    INNER JOIN departments
+    ON roles.department_id = departments.id`
+
+    const rData = await connection.query(rQuery);
+    console.table(rData);
+
+    init();
 }
