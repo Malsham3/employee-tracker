@@ -60,6 +60,8 @@ async function init() {
     }
 }
 
+init();
+
 //Function that views all employees in a table form
 async function viewAllEmployees() {
 
@@ -121,7 +123,37 @@ async function addEmployee() {
 
     const addEquery = await connection.query("INSERT INTO employees (first_name, last_name, role_id) VALUES (?, ?, ?) ")
 
-    const addEdata = await connection.query(addEquery, [first_name, last_name, role]);
+    const addEdata = await connection.query(addEquery, [employee.first_name, employee.last_name, employee.role]);
 
     console.log("Employee added.")
+}
+
+//Function that adds a new Role
+async function addRole() {
+    const allDepartments = await connection.query('SELECt name, id FROM departments')
+
+    const role = await inquirer.prompt([
+        {
+            name: 'role_title',
+            message: "What is the title of the role?"
+        },
+        {
+            name: 'role_salary',
+            message: "What is the salary for this role?"
+        },
+        {
+            name: 'role_department',
+            message: "Which department is this role in?",
+            choices: allDepartments.map((department) => ({
+                name: department.name,
+                value: department.id,
+            }))
+        }
+    ])
+
+    const addEquery = await connection.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?) ")
+
+    const addEdata = await connection.query(addEquery, [role.role_title, role.role_salary, role.role_department]);
+
+    console.log("Role added.")
 }

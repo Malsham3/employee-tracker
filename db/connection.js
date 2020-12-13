@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
 
   // Your password
   password: "",
-  database: "employees_db"
+  database: "employee_db"
 });
 connection.connect();
 // Setting up connection.query to use promises instead of callbacks
