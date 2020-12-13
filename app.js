@@ -126,6 +126,8 @@ async function addEmployee() {
     const addEdata = await connection.query(addEquery, [employee.first_name, employee.last_name, employee.role]);
 
     console.log("Employee added.")
+
+    init();
 }
 
 //Function that adds a new Role
@@ -151,9 +153,29 @@ async function addRole() {
         }
     ])
 
-    const addEquery = await connection.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?) ")
+    const addRquery = await connection.query("INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?) ")
 
-    const addEdata = await connection.query(addEquery, [role.role_title, role.role_salary, role.role_department]);
+    const addRdata = await connection.query(addRquery, [role.role_title, role.role_salary, role.role_department]);
 
     console.log("Role added.")
+
+    init();
+}
+
+//Function that adds a new department
+async function addDepartment() {
+    const viewAllDepartments = await inquirer.prompt([
+        {
+            name: 'department_title',
+            message: "What is the title of the role?"
+        }
+    ])
+
+    const addDquery = await connection.query("INSERT INTO departments (name) VALUES (?)")
+
+    const addDdata = await connection.query(addDquery, [department.department_title]);
+
+    console.log("Department added.")
+
+    init();
 }
