@@ -66,6 +66,7 @@ init();
 //Function that views all employees in a table form
 async function viewAllEmployees() {
 
+    //Mysql query that joins all tables in order to view all employees and their data (including role and department)
     const eQuery = `SELECT employees.first_name, employees.last_name,
     roles.title, roles.salary, departments.name,
     IFNULL(CONCAT(manager.first_name, ' ', manager.last_name),'N/A') AS 'Manager'
@@ -74,9 +75,13 @@ async function viewAllEmployees() {
     INNER JOIN roles ON employees.role_id = roles.id
     INNER JOIN departments ON roles.department_id = departments.id;`;
 
+    //run query through employees_db database and obtain data 
     const eData = await connection.query(eQuery);
+
+    //show data to user
     console.table(eData);
 
+    //re-prompt
     init();
 }
 
@@ -87,7 +92,9 @@ async function viewAllRoles() {
     ON roles.department_id = departments.id`;
 
     const rData = await connection.query(rQuery);
+
     console.table(rData);
+
     init();
 }
 
@@ -103,10 +110,13 @@ async function viewAllDepartments() {
 //Function that adds a new employee
 async function addEmployee() {
 
+    //Retrieve all roles and their id's from roles table inside of employees_db database
     const allRoles = await connection.query('SELECT title, id FROM roles');
 
+    //Retrieve all employees (first, last name and id's) from employees table inside of employees_db database
     const allEmployees = await connection.query('SELECT CONCAT(first_name, " ", last_name) AS name, id FROM employees')
 
+    //prompt user questions about new employee and save inside employee
     const employee = await inquirer.prompt([
         {
             name: 'first_name',
@@ -129,6 +139,7 @@ async function addEmployee() {
             name: 'manager',
             type: 'list',
             message: "What is the employee's manager?",
+            //for all e's inside of employees table, get the name and id.
             choices: allEmployees.map((e) => ({
                 name: e.name,
                 value: e.id
@@ -136,13 +147,16 @@ async function addEmployee() {
         }
     ]);
 
-
+    //Mysql query that inserts new employee data into employees table inside of employees_db database
     const addEquery = "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?) ";
 
+    //run query in order to perform the addition task.
     await connection.query(addEquery, [employee.first_name, employee.last_name, employee.role, employee.manager]);
 
+    //message to user to confirm the task was successful.
     console.log("Employee has been added.");
 
+    //re-prompt
     init();
 }
 
@@ -163,6 +177,7 @@ async function addRole() {
             name: 'department',
             type: 'list',
             message: "Which department is this role in?",
+            //for all departments inside of departments table, get the name and id.
             choices: allDepartments.map((department) => ({
                 name: department.name,
                 value: department.id,
@@ -231,6 +246,7 @@ async function removeRole() {
             name: "name",
             type: "list",
             message: "Which role would you like to remove?",
+            ////for all role's inside of roles table, get the title and id.
             choices: allRoles.map((role) => ({
                 name: role.title,
                 value: role.id
@@ -249,6 +265,8 @@ async function removeRole() {
 
 // Function that allows user to remove a department
 async function removeDepartment() {
+
+    //Retrieve all departments (names and id's) from departments table inside of employees_db database
     const allDepartments = await connection.query('SELECT name, id FROM departments')
 
     const department = await inquirer.prompt([
@@ -272,6 +290,7 @@ async function removeDepartment() {
     init();
 }
 
+//Function that allows user to update an employee's role
 async function updateEmployeeRole() {
     const allRoles = await connection.query('SELECT title, id FROM roles');
 
