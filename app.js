@@ -1,6 +1,7 @@
 const connection = require ('./db/connection');
 const inquirer = require('inquirer');
-const mysql = require('mysql')
+const mysql = require('mysql');
+const { registerPrompt } = require('inquirer');
 
 //initial prompts function
 async function init() {
@@ -103,8 +104,6 @@ async function viewAllDepartments() {
 
 //Function that adds a new employee
 async function addEmployee() {
-    const allRoles = await connection.query('SELECT title, id FROM role');
-    const allDepartments = await connection.query('SELECt name, id FROM departments');
 
     const employee = await inquirer.prompt([
         {
@@ -123,7 +122,7 @@ async function addEmployee() {
 
     const addEquery = "INSERT INTO employees (first_name, last_name, role_id) VALUES (?, ?, ?) ";
 
-    const addEdata = await connection.query(addEquery, [employee.first_name, employee.last_name, employee.role]);
+    await connection.query(addEquery, [employee.first_name, employee.last_name, employee.role]);
 
     console.log("Employee has been added.");
 
@@ -136,15 +135,15 @@ async function addRole() {
 
     const role = await inquirer.prompt([
         {
-            name: 'role_title',
+            name: 'title',
             message: "What is the title of the role?"
         },
         {
-            name: 'role_salary',
+            name: 'salary',
             message: "What is the salary for this role?"
         },
         {
-            name: 'role_department',
+            name: 'department',
             message: "Which department is this role in?",
             choices: allDepartments.map((department) => ({
                 name: department.name,
@@ -155,7 +154,7 @@ async function addRole() {
 
     const addRquery = "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?) ";
 
-    const addRdata = await connection.query(addRquery, [role.role_title, role.role_salary, role.role_department]);
+    const addRdata = await connection.query(addRquery, [role.title, role.salary, role.department]);
 
     console.log("Role has been added.");
 
@@ -173,7 +172,7 @@ async function addDepartment() {
 
     const addDquery = "INSERT INTO departments (name) VALUES (?)";
 
-    const addDdata = await connection.query(addDquery, [department.department_title]);
+    await connection.query(addDquery, [department.department_title]);
 
     console.log("Department has been added.");
 
@@ -182,11 +181,11 @@ async function addDepartment() {
 
 // Function that allows user to remove an employee
 async function removeEmployee() {
-    const allEmplpoyees = await connection.query('SELECT name, id FROM departments')
+    const allEmployees = await connection.query('SELECT CONCAT(first_name, " ", last_name) AS name, id FROM employees')
 
     const employee = await prompt([
         {
-            name: "employee_name",
+            name: "name",
             type: "list",
             message: "Which employee would you like to remove?",
             choices: allEmplpoyees.map((employee) => ({
@@ -198,9 +197,11 @@ async function removeEmployee() {
 
     const removeEquery = "DELETE FROM employees WHERE id = ?";
 
-    const removeEdata = await connection.query(removeEquery, [employee.employee_name]);
+    await connection.query(removeEquery, [employee.name]);
 
     console.log("Employee has been deleted.")
+
+    init();
 }
 
 // Function that allows user to remove a role
@@ -209,7 +210,7 @@ async function removeRole() {
 
     const role = await prompt([
         {
-            name: "role_name",
+            name: "name",
             type: "list",
             message: "Which role would you like to remove?",
             choices: allRoles.map((role) => ({
@@ -221,9 +222,11 @@ async function removeRole() {
 
     const removeRquery = "DELETE FROM roles WHERE id = ?";
 
-    const removeRdata = await connection.query(removeRquery, [role.role_name]);
+    await connection.query(removeRquery, [role.name]);
 
     console.log("Role has been deleted.");
+
+    init();
 }
 
 // Function that allows user to remove a department
@@ -232,7 +235,7 @@ async function removeDepartment() {
 
     const department = await prompt([
         {
-            name: "department_name",
+            name: "name",
             type: "list",
             message: "Which department would you like to remove?",
             choices: allDepartments.map((department) => ({
@@ -244,7 +247,44 @@ async function removeDepartment() {
 
     const removeDquery = "DELETE FROM departments WHERE id = ?";
 
-    const removeDdata = await connection.query(removeDquery, [department.department_name]);
+    await connection.query(removeDquery, [department.name]);
 
     console.log("department has been deleted.");
+
+    init();
+}
+
+async function updateEmployeeRole() {
+    const allRoles = await connection.query('SELECT title, id FROM role');
+
+    const allEmployees = await connection.query('SELECT CONCAT(first_name, " ", last_name) AS name, id FROM employees');
+
+    const updatedEmployee = await inquirer.prompt([
+        {
+            name: "e_name",
+            type: "list",
+            message: "Which employee?",
+            choices: allEmployees.map((employee) => ({
+                name: employee.name,
+                value: employee.id,
+            })),
+        },
+        {
+            name: "r_title",
+            type: "list",
+            message: "What role will this employee have?",
+            choices: allRoles.map((role) => ({
+                name: role.tile,
+                value: role.id
+            }))
+        }
+    ])
+
+    const updatedRquery = 'UPDATE employees SET role_id = ? WHERE id = ?';
+    
+    await connection.query(updatedRquery, [updatedEmployee.e_name, updatedEmployee.r_title])
+
+    console.log("Employee's role has been updated.")
+
+    init();
 }
