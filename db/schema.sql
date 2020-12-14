@@ -18,12 +18,10 @@ CREATE TABLE roles(
 );
 
 CREATE TABLE employees(
-    id INT NOT NULL AUTO_INCREMENT,
-    first_name VARCHAR(30),
-    last_name VARCHAR(30),
-    role_id INT,
-    manager_id INT, 
-    PRIMARY KEY (id),
-    FOREIGN KEY (role_id) REFERENCES employees(id),
-    FOREIGN KEY (manager_id) REFERENCES roles(id)
-)
+  id INT AUTO_INCREMENT,
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
+  role_id INT REFERENCES roles.id,
+  manager_id INT REFERENCES employee.id,
+  PRIMARY KEY (id)
+);
