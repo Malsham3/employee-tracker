@@ -7,7 +7,7 @@ const { registerPrompt } = require('inquirer');
 async function init() {
     const { choice } = await inquirer.prompt({
         name: "choice",
-        type: "List",
+        type: "list",
         message: "What would you like to do ?",
         choices: [
             "View all Employees",
